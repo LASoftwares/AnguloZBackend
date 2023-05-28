@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnguloZApi", "AnguloZApi\AnguloZApi.csproj", "{37732880-1D94-41F7-A217-1D89FA2140C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnguloZApi", "AnguloZApi\AnguloZApi.csproj", "{37732880-1D94-41F7-A217-1D89FA2140C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnguloZApi.Test", "AnguloZApi.Test\AnguloZApi.Test.csproj", "{A73BFB4E-F901-43B3-AA1E-0C1A2726869A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{37732880-1D94-41F7-A217-1D89FA2140C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37732880-1D94-41F7-A217-1D89FA2140C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37732880-1D94-41F7-A217-1D89FA2140C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A73BFB4E-F901-43B3-AA1E-0C1A2726869A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A73BFB4E-F901-43B3-AA1E-0C1A2726869A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A73BFB4E-F901-43B3-AA1E-0C1A2726869A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A73BFB4E-F901-43B3-AA1E-0C1A2726869A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
