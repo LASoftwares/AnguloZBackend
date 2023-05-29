@@ -2,6 +2,8 @@ using AnguloZApi.DependencyInjection;
 using AnguloZApi.Repositories;
 using AnguloZApi.Services.Abstractions;
 using AnguloZApi.Services.Implementations;
+using CognitiveServices.Translator;
+using CognitiveServices.Translator.Extension;
 
 namespace AnguloZApi
 {
@@ -19,6 +21,7 @@ namespace AnguloZApi
             string connectionString = config.GetConnectionString("MongoDb");
             builder.Services.AddMongoDb(connectionString);
             builder.Services.AddBlobClient(config["AzureBlobs:ConnectionString"], config["AzureBlobs:ContainerName"]);
+            builder.Services.AddCognitiveServicesTranslator(config);
             builder.Services.AddScoped<IProjetoArchRepository, ProjetoArchRepository>();
             builder.Services.AddScoped<IBlobService, BlobService>();
             builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
