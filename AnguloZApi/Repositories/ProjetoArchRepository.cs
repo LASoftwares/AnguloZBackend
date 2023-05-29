@@ -5,12 +5,10 @@ namespace AnguloZApi.Repositories
 {
     public class ProjetoArchRepository : IProjetoArchRepository
     {
-        private readonly IMongoDatabase _database;
         private readonly IMongoCollection<ProjetoArch> _projects;
 
         public ProjetoArchRepository(IMongoDatabase database)
         {
-            _database = database;
             _projects = database.GetCollection<ProjetoArch>("projetos");
         }
 
