@@ -33,7 +33,7 @@ namespace AnguloZApi
         {
          
             app.UseHttpsRedirection();
-            app.UseCors(x => x.AllowAnyOrigin());
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseRouting();
             app.UseAuthorization();
