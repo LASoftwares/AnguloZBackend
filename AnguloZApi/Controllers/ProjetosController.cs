@@ -29,7 +29,7 @@ namespace AnguloZApi.Controllers
         public IActionResult Options()
         {
             Response.Headers.Add("Allow", "GET, POST, PUT, DELETE, OPTIONS");
-            Response.Headers.Add(Response.Headers.ContentType, "application/json");
+            Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, Authorization, UserSecret");
             return NoContent();
         }
 
