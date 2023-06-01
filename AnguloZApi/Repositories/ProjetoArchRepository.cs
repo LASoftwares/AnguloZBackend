@@ -21,7 +21,7 @@ namespace AnguloZApi.Repositories
 
         public async Task<ProjetoArch> Get(Guid id)
         {
-            var filter = Builders<ProjetoArch>.Filter.Eq("id", id);
+            var filter = Builders<ProjetoArch>.Filter.Eq("_id", id);
             var result = await _projects.FindAsync(filter);
             return await result.FirstOrDefaultAsync();
         }
@@ -36,7 +36,7 @@ namespace AnguloZApi.Repositories
         public async Task Update(Guid id, ProjetoArchInput projetoArch)
         {
             var entity = TransformInputToEntity(projetoArch);
-            var filter = Builders<ProjetoArch>.Filter.Eq("id", id);
+            var filter = Builders<ProjetoArch>.Filter.Eq("_id", id);
             await _projects.FindOneAndReplaceAsync(filter, entity);
         }
 
