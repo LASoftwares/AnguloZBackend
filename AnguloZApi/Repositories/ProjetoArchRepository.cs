@@ -21,7 +21,7 @@ namespace AnguloZApi.Repositories
 
         public async Task<ProjetoArch> Get(Guid id)
         {
-            var filter = Builders<ProjetoArch>.Filter.Eq("_id", id);
+            var filter = Builders<ProjetoArch>.Filter.Eq("id", id);
             var result = await _projects.FindAsync(filter);
             return await result.FirstOrDefaultAsync();
         }
