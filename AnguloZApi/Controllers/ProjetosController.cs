@@ -50,6 +50,7 @@ namespace AnguloZApi.Controllers
 
         // POST api/<ProjetosController>
         [HttpPost]
+        [Consumes("application/json")]
         public async Task<IActionResult> Post([FromBody] ProjetoArquiteturaRequest value, [FromHeader] Guid userSecret)
         {
             bool validSecret = await _authorizationService.ValidateUserSecretAsync(userSecret);
