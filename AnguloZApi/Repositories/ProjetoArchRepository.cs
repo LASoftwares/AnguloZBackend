@@ -52,9 +52,10 @@ namespace AnguloZApi.Repositories
                 Id = Guid.NewGuid(),
                 Titulo = input.Titulo,
                 Descricao = input.Descricao,
+                Categoria = input.Categoria,
                 Imagens = input.Imagens
             };
         }
     }
-    public record ProjetoArchInput(string Titulo, string Descricao, List<string> Imagens);
+    public record ProjetoArchInput(string Titulo, string Descricao, string Categoria,List<string> Imagens);
 }

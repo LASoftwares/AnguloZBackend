@@ -52,8 +52,7 @@ namespace AnguloZApi
             app.UseHttpsRedirection();
             app.UseAuthorization();
 
-
-            app.UseCors(x => x.AllowAnyOrigin());
+            app.UseCors();
             app.MapControllers();
 
             app.Run();
