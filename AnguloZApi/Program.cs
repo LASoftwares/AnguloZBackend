@@ -30,6 +30,15 @@ namespace AnguloZApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddCors(builder =>
+            {
+                builder.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin();
+                    policy.AllowAnyMethod();
+                    policy.AllowAnyHeader();
+                });
+            });
 
             var app = builder.Build();
 
@@ -41,10 +50,10 @@ namespace AnguloZApi
             }
 
             app.UseHttpsRedirection();
-            app.UseCors(x => x.AllowAnyOrigin());
             app.UseAuthorization();
 
 
+            app.UseCors(x => x.AllowAnyOrigin());
             app.MapControllers();
 
             app.Run();

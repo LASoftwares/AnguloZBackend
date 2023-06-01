@@ -25,13 +25,6 @@ namespace AnguloZApi.Controllers
             _blobService = blobService;
             _authorizationService = authorizationService;
         }
-        [HttpOptions]
-        public IActionResult Options()
-        {
-            Response.Headers.Add("Allow", "GET, POST, PUT, DELETE, OPTIONS");
-            Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, Authorization, UserSecret");
-            return NoContent();
-        }
 
         // GET: api/<ProjetosController>
         [HttpGet]
