@@ -57,5 +57,5 @@ namespace AnguloZApi.Repositories
             };
         }
     }
-    public record ProjetoArchInput(string Titulo, string Descricao, string Categoria,List<string> Imagens);
+    public record ProjetoArchInput(string Titulo, string Descricao, string Categoria, List<string> Imagens);
 }

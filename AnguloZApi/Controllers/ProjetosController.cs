@@ -120,7 +120,7 @@ namespace AnguloZApi.Controllers
 
         private ProjetoArchInput ProjetoRequestToRepositoryInput(ProjetoArquiteturaRequest value)
         {
-            return new ProjetoArchInput(value.Titulo, value.Descricao, new List<string>());
+            return new ProjetoArchInput(value.Titulo, value.Descricao, value.Categoria, new List<string>());
         }
 
         private async Task<ProjetoArquiteturaResponse> ProjetoRepositoryOutputToResponse(ProjetoArch value)
