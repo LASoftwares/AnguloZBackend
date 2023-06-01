@@ -24,12 +24,10 @@ namespace AnguloZApi
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddCors(builder =>
             {
-                builder.AddDefaultPolicy(policy =>
-                {
-                    policy.AllowAnyOrigin();
-                    policy.AllowAnyMethod();
-                    policy.AllowAnyHeader();
-                });
+                builder.AddPolicy("AllowAll", x =>
+                x.AllowAnyHeader()
+                .AllowAnyOrigin()
+                .AllowAnyMethod());
             });
             services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -43,7 +41,7 @@ namespace AnguloZApi
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseCors();
+            app.UseCors("AllowAll");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
