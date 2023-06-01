@@ -28,16 +28,24 @@ namespace AnguloZApi.Controllers
 
         // GET: api/<ProjetosController>
         [HttpGet]
-        public async Task<IEnumerable<ProjetoArch>> GetAsync()
+        public async Task<IEnumerable<ProjetoArquiteturaResponse>> GetAsync()
         {
-            return await _projetoArchRepository.GetAll();
+            var projetos = await _projetoArchRepository.GetAll();
+            var entities = new List<ProjetoArquiteturaResponse>();
+            foreach (var item in projetos)
+            {
+                var entity = await ProjetoRepositoryOutputToResponse(item);
+                entities.Add(entity);
+            }
+            return entities;
         }
 
         // GET api/<ProjetosController>/5
         [HttpGet("{id}")]
-        public async Task<ProjetoArch> GetAsync(Guid id)
+        public async Task<ProjetoArquiteturaResponse> GetAsync(Guid id)
         {
-            return await _projetoArchRepository.Get(id);
+            var projeto = await _projetoArchRepository.Get(id);
+            return await ProjetoRepositoryOutputToResponse(projeto);
         }
 
         // POST api/<ProjetosController>
@@ -112,6 +120,24 @@ namespace AnguloZApi.Controllers
         private ProjetoArchInput ProjetoRequestToRepositoryInput(ProjetoArquiteturaRequest value)
         {
             return new ProjetoArchInput(value.Titulo, value.Descricao, new List<string>());
+        }
+
+        private async Task<ProjetoArquiteturaResponse> ProjetoRepositoryOutputToResponse(ProjetoArch value)
+        {
+            var projeto =  new ProjetoArquiteturaResponse 
+            {
+                Categoria= value.Categoria,
+                Descricao = value.Descricao,
+                Id = value.Id,
+                Titulo = value.Titulo,
+                Imagens = new List<byte[]>()
+            };
+            var blobs = await _blobService.ReadBlobsFromProjectAsync(value.Titulo);
+            foreach (var blob in blobs)
+            {
+                projeto.Imagens.Add(blob);
+            }
+            return projeto;
         }
     }
 }
