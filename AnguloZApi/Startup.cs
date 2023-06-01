@@ -41,8 +41,8 @@ namespace AnguloZApi
         {
          
             app.UseHttpsRedirection();
-            app.UseCors();
             app.UseRouting();
+            app.UseCors();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
