@@ -1,4 +1,7 @@
-﻿using System.Globalization;
+﻿using CognitiveServices.Translator;
+using CognitiveServices.Translator.Translate;
+using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 using System.Text;
 
 namespace AnguloZApi.Extensions
@@ -23,6 +26,18 @@ namespace AnguloZApi.Extensions
             return stringBuilder
                 .ToString()
                 .Normalize(NormalizationForm.FormC).Replace(" ", "-");
+        }
+        public static string Translate(this string text, ITranslateClient translateClient)
+        {
+            var response = translateClient.Translate(
+                new RequestContent { Text = text },
+                new RequestParameter
+                {
+                    From = "pt-br",
+                    To = new[] { "en" },
+                    IncludeAlignment = true
+                });
+            return response.First().Translations.First().Text;
         }
     }
 }

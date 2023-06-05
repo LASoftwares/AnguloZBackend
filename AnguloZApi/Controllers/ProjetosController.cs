@@ -28,24 +28,25 @@ namespace AnguloZApi.Controllers
 
         // GET: api/<ProjetosController>
         [HttpGet]
-        public async Task<IEnumerable<ProjetoArquiteturaResponse>> GetAsync()
+        [Route("{lang}")]
+        public async Task<IEnumerable<ProjetoArquiteturaResponse>> GetAsync(string lang)
         {
             var projetos = await _projetoArchRepository.GetAll();
             var entities = new List<ProjetoArquiteturaResponse>();
             foreach (var item in projetos)
             {
-                var entity = await ProjetoRepositoryOutputToResponse(item);
+                var entity = await ProjetoRepositoryOutputToResponse(item,lang);
                 entities.Add(entity);
             }
             return entities;
         }
 
         // GET api/<ProjetosController>/5
-        [HttpGet("{id}")]
-        public async Task<ProjetoArquiteturaResponse> GetAsync(Guid id)
+        [HttpGet("{id}/{lang}")]
+        public async Task<ProjetoArquiteturaResponse> GetAsync(Guid id,string lang)
         {
             var projeto = await _projetoArchRepository.Get(id);
-            return await ProjetoRepositoryOutputToResponse(projeto);
+            return await ProjetoRepositoryOutputToResponse(projeto, lang);
         }
 
         // POST api/<ProjetosController>
@@ -58,14 +59,8 @@ namespace AnguloZApi.Controllers
                 return Unauthorized();
 
             var newEntity = ProjetoRequestToRepositoryInput(value);
-            foreach (var imagem in value.Imagens)
-            {
-                var stream = new MemoryStream(imagem);
-                string nomeImagem = await _blobService.UploadBlobByProjectAsync(value.Titulo, stream);
-                newEntity.Imagens.Add(nomeImagem);
-            }
             var id = await _projetoArchRepository.Create(newEntity);
-            return CreatedAtAction("Get", new { id });
+            return StatusCode(201, id);
         }
         [HttpPut]
         public async Task<IActionResult> Put(Guid id, [FromBody] ProjetoArquiteturaRequest value, [FromHeader] Guid userSecret)
@@ -75,34 +70,7 @@ namespace AnguloZApi.Controllers
                 return Unauthorized();
 
             var oldEntity = await _projetoArchRepository.Get(id);
-            var newEntity = ProjetoRequestToRepositoryInput(value) with 
-            { 
-                Imagens = oldEntity.Imagens 
-            };
             return AcceptedAtAction(nameof(GetAsync), new { id = oldEntity.Id });
-        }
-        [HttpPut]
-        [Route("OverwriteImage/{index}")]
-        public async Task<IActionResult> OverwriteImageAsync(int index, [FromBody] OverwriteImageRequest request, [FromHeader] Guid userSecret)
-        {
-            bool validSecret = await _authorizationService.ValidateUserSecretAsync(userSecret);
-            if (!validSecret)
-                return Unauthorized();
-
-            var stream = new MemoryStream(request.Imagem);
-            await _blobService.OverrideBlobByIndexAsync(request.NomeProjeto, index, stream);
-            return Accepted();
-        }
-        [HttpDelete]
-        [Route("DeleteImage/{projeto}/{index}")]
-        public async Task<IActionResult> DeleteImageAsync([FromRoute]string projeto, [FromRoute]int index, [FromHeader] Guid userSecret)
-        {
-            bool validSecret = await _authorizationService.ValidateUserSecretAsync(userSecret);
-            if (!validSecret)
-                return Unauthorized();
-
-            await _blobService.DeleteBlobByIndexAsync(projeto, index);
-            return NoContent();
         }
         // DELETE api/<ProjetosController>/5
         [HttpDelete("{id}")]
@@ -114,26 +82,73 @@ namespace AnguloZApi.Controllers
 
             var projeto = await _projetoArchRepository.Get(id);
             await _projetoArchRepository.Delete(id);
-            await _blobService.ClearProjectAsync(projeto.Titulo);
+            await _blobService.ClearProjectAsync(projeto.Languages.FirstOrDefault(x=>x.Language == "br")?.Projeto.Titulo);
+            return NoContent();
+        }
+        [HttpPost]
+        [Route("Images/Add/{id}")]
+        public async Task<IActionResult> AddImageAsync([FromRoute]Guid id, [FromForm]IFormFileCollection imageFiles, [FromHeader] Guid userSecret)
+        {
+            bool validSecret = await _authorizationService.ValidateUserSecretAsync(userSecret);
+            if (!validSecret)
+                return Unauthorized();
+
+            if(imageFiles.Count < 1)
+                return BadRequest("No files were sent");
+            var project = await _projetoArchRepository.Get(id);
+            foreach (var imageFile in imageFiles)
+            {
+                var stream = imageFile.OpenReadStream();
+                string nomeImagem = await _blobService.UploadBlobByProjectAsync(
+                    project.Languages
+                        .FirstOrDefault(x=>x.Language == "br").Projeto.Titulo, 
+                    stream);
+            }
+
+            return Ok(project);
+        }
+        
+
+        [HttpPut]
+        [Route("Images/Overwrite/{projeto}/{index}")]
+        public async Task<IActionResult> OverwriteImageAsync([FromRoute]int index, [FromRoute]string projeto, IFormFile file, [FromHeader] Guid userSecret)
+        {
+            bool validSecret = await _authorizationService.ValidateUserSecretAsync(userSecret);
+            if (!validSecret)
+                return Unauthorized();
+
+            var stream = file.OpenReadStream();
+            await _blobService.OverrideBlobByIndexAsync(projeto, index, stream);
+            return Accepted();
+        }
+        [HttpDelete]
+        [Route("Images/{projeto}/{index}")]
+        public async Task<IActionResult> DeleteImageAsync([FromRoute]string projeto, [FromRoute]int index, [FromHeader] Guid userSecret)
+        {
+            bool validSecret = await _authorizationService.ValidateUserSecretAsync(userSecret);
+            if (!validSecret)
+                return Unauthorized();
+
+            await _blobService.DeleteBlobByIndexAsync(projeto, index);
             return NoContent();
         }
 
         private ProjetoArchInput ProjetoRequestToRepositoryInput(ProjetoArquiteturaRequest value)
         {
-            return new ProjetoArchInput(value.Titulo, value.Descricao, value.Categoria, new List<string>());
+            return new ProjetoArchInput(value.Titulo, value.Descricao, value.Categoria);
         }
 
-        private async Task<ProjetoArquiteturaResponse> ProjetoRepositoryOutputToResponse(ProjetoArch value)
+        private async Task<ProjetoArquiteturaResponse> ProjetoRepositoryOutputToResponse(ProjetoEntityModel value, string lang)
         {
+            var entity = value.Languages.FirstOrDefault(value=> value.Language == lang).Projeto;
             var projeto =  new ProjetoArquiteturaResponse 
             {
-                Categoria= value.Categoria,
-                Descricao = value.Descricao,
-                Id = value.Id,
-                Titulo = value.Titulo,
+                Categoria= entity.Categoria,
+                Descricao = entity.Descricao,
+                Titulo = entity.Titulo,
                 Imagens = new List<byte[]>()
             };
-            var blobs = await _blobService.ReadBlobsFromProjectAsync(value.Titulo);
+            var blobs = await _blobService.ReadBlobsFromProjectAsync(entity.Titulo);
             foreach (var blob in blobs)
             {
                 projeto.Imagens.Add(blob);
