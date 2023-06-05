@@ -69,8 +69,8 @@ namespace AnguloZApi.Controllers
             if (!validSecret)
                 return Unauthorized();
 
-            var oldEntity = await _projetoArchRepository.Get(id);
-            return AcceptedAtAction(nameof(GetAsync), new { id = oldEntity.Id });
+            await _projetoArchRepository.Update(id, ProjetoRequestToRepositoryInput(value));
+            return AcceptedAtAction(nameof(GetAsync), new { id });
         }
         // DELETE api/<ProjetosController>/5
         [HttpDelete("{id}")]

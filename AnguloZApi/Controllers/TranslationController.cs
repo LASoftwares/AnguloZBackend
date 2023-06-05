@@ -10,7 +10,7 @@ namespace AnguloZApi.Controllers
     public class TranslationController : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> TranslateAsync([FromBody] string texto, [FromServices] ITranslateClient services)
+        public IActionResult TranslateAsync([FromBody] string texto, [FromServices] ITranslateClient services)
         {
             var response = services.Translate(
                 new RequestContent { Text = texto },

@@ -35,14 +35,14 @@ namespace AnguloZApi.Repositories
 
         public async Task<Guid> Create(ProjetoArchInput projetoArch)
         {
-            var entity = TransformInputToEntity(projetoArch);
+            var entity = TransformInputToEntity(projetoArch,Guid.Empty);
             await _projects.InsertOneAsync(entity);
             return entity.Id;
         }
 
         public async Task Update(Guid id, ProjetoArchInput projetoArch)
         {
-            var entity = TransformInputToEntity(projetoArch);
+            var entity = TransformInputToEntity(projetoArch,id);
             var filter = Builders<ProjetoEntityModel>.Filter.Eq("_id", id);
             await _projects.FindOneAndReplaceAsync(filter, entity);
         }
@@ -52,12 +52,13 @@ namespace AnguloZApi.Repositories
             await _projects.FindOneAndDeleteAsync(x=>x.Id.Equals(id));
         }
 
-        private ProjetoEntityModel TransformInputToEntity(ProjetoArchInput input)
+        private ProjetoEntityModel TransformInputToEntity(ProjetoArchInput input, Guid id)
         {
-            
+            if(id == Guid.Empty)
+                id = Guid.NewGuid();
             var entity = new ProjetoEntityModel
             {
-                Id = Guid.NewGuid(),
+                Id = id,
                 Languages = new List<LanguageModel>
                 {
                     new LanguageModel
