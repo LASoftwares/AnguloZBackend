@@ -143,6 +143,7 @@ namespace AnguloZApi.Controllers
             var entity = value.Languages.FirstOrDefault(value=> value.Language == lang).Projeto;
             var projeto =  new ProjetoArquiteturaResponse 
             {
+                Id = value.Id,
                 Categoria= entity.Categoria,
                 Descricao = entity.Descricao,
                 Titulo = entity.Titulo,
