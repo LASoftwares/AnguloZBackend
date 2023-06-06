@@ -4,60 +4,60 @@ using AnguloZApi.Repositories;
 using CognitiveServices.Translator;
 using MongoDB.Driver;
 
-namespace AnguloZApi.Tests;
-
-public class ProjetoRepositoryTestImp : IProjetoArchRepository
+namespace AnguloZApi.Tests
 {
-    private readonly IMongoCollection<ProjetoEntityModel> _projects;
-    private readonly ITranslateClient _translateClient;
-
-    public ProjetoRepositoryTestImp(IMongoDatabase database, ITranslateClient translateClient)
+    public class ProjetoRepositoryTestImp : IProjetoArchRepository
     {
-        _projects = database.GetCollection<ProjetoEntityModel>("projetos-teste");
-        _translateClient = translateClient;
-    }
+        private readonly IMongoCollection<ProjetoEntityModel> _projects;
+        private readonly ITranslateClient _translateClient;
 
-    public async Task<IEnumerable<ProjetoEntityModel>> GetAll()
-    {
-        var filter = Builders<ProjetoEntityModel>.Filter.Empty;
-        var documents = await _projects.Find(filter).ToListAsync();
-        return documents;
-    }
-
-    public async Task<ProjetoEntityModel> Get(Guid id)
-    {
-        var filter = Builders<ProjetoEntityModel>.Filter.Eq("_id", id);
-        var result = await _projects.FindAsync(filter);
-        return await result.FirstOrDefaultAsync();
-    }
-
-    public async Task<Guid> Create(ProjetoArchInput projetoArch)
-    {
-        var entity = TransformInputToEntity(projetoArch,Guid.Empty);
-        await _projects.InsertOneAsync(entity);
-        return entity.Id;
-    }
-
-    public async Task Update(Guid id, ProjetoArchInput projetoArch)
-    {
-        var entity = TransformInputToEntity(projetoArch, id);
-        var filter = Builders<ProjetoEntityModel>.Filter.Eq("_id", id);
-        await _projects.FindOneAndReplaceAsync(filter, entity);
-    }
-
-    public async Task Delete(Guid id)
-    {
-        await _projects.FindOneAndDeleteAsync(x => x.Id.Equals(id));
-    }
-
-    private ProjetoEntityModel TransformInputToEntity(ProjetoArchInput input, Guid id)
-    {
-        if (id == Guid.Empty)
-            id = Guid.NewGuid();
-        var entity = new ProjetoEntityModel
+        public ProjetoRepositoryTestImp(IMongoDatabase database, ITranslateClient translateClient)
         {
-            Id = id,
-            Languages = new List<LanguageModel>
+            _projects = database.GetCollection<ProjetoEntityModel>("projetos-teste");
+            _translateClient = translateClient;
+        }
+
+        public async Task<IEnumerable<ProjetoEntityModel>> GetAll()
+        {
+            var filter = Builders<ProjetoEntityModel>.Filter.Empty;
+            var documents = await _projects.Find(filter).ToListAsync();
+            return documents;
+        }
+
+        public async Task<ProjetoEntityModel> Get(Guid id)
+        {
+            var filter = Builders<ProjetoEntityModel>.Filter.Eq("_id", id);
+            var result = await _projects.FindAsync(filter);
+            return await result.FirstOrDefaultAsync();
+        }
+
+        public async Task<Guid> Create(ProjetoArchInput projetoArch)
+        {
+            var entity = TransformInputToEntity(projetoArch, Guid.Empty);
+            await _projects.InsertOneAsync(entity);
+            return entity.Id;
+        }
+
+        public async Task Update(Guid id, ProjetoArchInput projetoArch)
+        {
+            var entity = TransformInputToEntity(projetoArch, id);
+            var filter = Builders<ProjetoEntityModel>.Filter.Eq("_id", id);
+            await _projects.FindOneAndReplaceAsync(filter, entity);
+        }
+
+        public async Task Delete(Guid id)
+        {
+            await _projects.FindOneAndDeleteAsync(x => x.Id.Equals(id));
+        }
+
+        private ProjetoEntityModel TransformInputToEntity(ProjetoArchInput input, Guid id)
+        {
+            if (id == Guid.Empty)
+                id = Guid.NewGuid();
+            var entity = new ProjetoEntityModel
+            {
+                Id = id,
+                Languages = new List<LanguageModel>
             {
                 new LanguageModel
                 {
@@ -80,8 +80,11 @@ public class ProjetoRepositoryTestImp : IProjetoArchRepository
                     }
                 }
             }
-        };
+            };
 
-        return entity;
+            return entity;
+        }
     }
 }
+
+

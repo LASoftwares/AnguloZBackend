@@ -27,6 +27,10 @@ jobs:
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/AnguloZApi
+
+      - name: Run Tests
+        run: dotnet test
+        
       - name: Delete Old Artifacts
         uses: actions/github-script@v6
         id: artifact
